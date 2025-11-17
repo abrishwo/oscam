@@ -2,46 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Http\Requests\VerifyProductRequest;
+use App\Services\VerificationService;
 
 class ProductController extends Controller
 {
-    public function verify(Request $request)
+    protected $verificationService;
+
+    public function __construct(VerificationService $verificationService)
     {
-        $request->validate([
-            'qr' => 'required|string'
-        ]);
+        $this->verificationService = $verificationService;
+    }
 
-        $qr = $request->qr;
+    public function verify(VerifyProductRequest $request)
+    {
+        $validatedData = $request->validated();
 
-        $product = Product::where('qr_code', $qr)->first();
+        $result = $this->verificationService->verifyProduct(
+            $validatedData['qr_code'],
+            $validatedData['device_id'] ?? null,
+            $validatedData['geo_location'] ?? null,
+            $validatedData['user_agent'] ?? null
+        );
 
-        if (!$product) {
-            return response()->json([
-                'status' => 'fake',
-                'message' => 'QR code not found'
-            ]);
-        }
-
-        if ($product->scan_count >= 1) {
-            return response()->json([
-                'status' => 'suspicious',
-                'message' => 'QR was scanned before (possible clone)',
-                'product' => $product
-            ]);
-        }
-
-        $product->update([
-            'scan_count' => $product->scan_count + 1,
-            'last_scan' => Carbon::now()
-        ]);
-
-        return response()->json([
-            'status' => 'original',
-            'product' => $product
-        ]);
+        return response()->json($result);
     }
 }
-

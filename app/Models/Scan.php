@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Scan extends Model
 {
     use HasFactory;
 
@@ -15,12 +15,11 @@ class Product extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'qr_code',
-        'product_name',
-        'batch_number',
-        'status',
-        'scan_count',
-        'last_scan',
+        'product_id',
+        'scanned_at',
+        'device_id',
+        'geo_location',
+        'user_agent',
     ];
 
     /**
@@ -29,14 +28,15 @@ class Product extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'last_scan' => 'datetime',
+        'scanned_at' => 'datetime',
+        'geo_location' => 'array',
     ];
 
     /**
-     * Get the scans for the product.
+     * Get the product that was scanned.
      */
-    public function scans()
+    public function product()
     {
-        return $this->hasMany(Scan::class);
+        return $this->belongsTo(Product::class);
     }
 }
