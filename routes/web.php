@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// API Documentation Route
+Route::get('/api/docs', function () {
+    return view('docs.index');
+});
+
+// Admin Panel Routes
+Route::prefix('admin')->group(function () {
+    Route::get('/login', [AdminController::class, 'login'])->name('login');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+        Route::get('/products', [AdminController::class, 'products'])->name('admin.products.index');
+        Route::get('/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
+        Route::get('/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+    });
 });

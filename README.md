@@ -112,6 +112,9 @@ Authorization: Bearer <your-token>
 -   `PUT /api/products/{id}`: Update a product.
 -   `DELETE /api/products/{id}`: Delete a product.
 -   `GET /api/products/{product}/generate-qr`: Generate a QR code for a product.
+-   `POST /api/register`: Register a new user.
+-   `POST /api/login`: Log in a user.
+-   `POST /api/logout`: Log out a user.
 
 ### Example Requests
 
@@ -148,6 +151,14 @@ curl -X POST http://localhost:8000/api/products \
 ## Deployment
 
 This project is ready for deployment on a variety of platforms, including cPanel, VPS, or Docker. Ensure that you have configured your `.env` file with the correct production settings before deploying.
+
+## Admin Panel
+
+This project includes a simple admin panel for managing products. You can access the admin panel by visiting the `/admin/login` route in your browser.
+
+## API Documentation
+
+The API documentation is available at the `/api/docs` route. This will open a Swagger UI interface that allows you to explore and test the API endpoints.
 
 ## Versioning
 
