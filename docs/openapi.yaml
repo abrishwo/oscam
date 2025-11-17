@@ -1,0 +1,167 @@
+openapi: 3.0.0
+info:
+  title: Product Verification API
+  version: 1.0.0
+  description: API for verifying product authenticity using QR codes.
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /api/verify:
+    post:
+      summary: Verify a product's authenticity
+      tags:
+        - Product Verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                qr_code:
+                  type: string
+                  example: "unique-qr-code-string"
+                device_id:
+                  type: string
+                  example: "device-uuid-123"
+                geo_location:
+                  type: string
+                  example: "{\"lat\": 12.34, \"lng\": 56.78}"
+                user_agent:
+                  type: string
+                  example: "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36"
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [original, fake, suspicious]
+                  message:
+                    type: string
+                  product:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      product_name:
+                        type: string
+                      batch_number:
+                        type: string
+  /api/products:
+    get:
+      summary: Get a list of all products
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A paginated list of products.
+    post:
+      summary: Create a new product
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_name:
+                  type: string
+                batch_number:
+                  type: string
+      responses:
+        '201':
+          description: The created product.
+  /api/products/{id}:
+    get:
+      summary: Get a single product by ID
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The requested product.
+    put:
+      summary: Update a product
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_name:
+                  type: string
+                batch_number:
+                  type: string
+                status:
+                  type: string
+                  enum: [original, fake]
+      responses:
+        '200':
+          description: The updated product.
+    delete:
+      summary: Delete a product
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No content.
+  /api/products/{product}/generate-qr:
+    get:
+      summary: Generate a QR code for a product
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: product
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The QR code string for the product.
