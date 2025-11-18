@@ -2,63 +2,84 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
-use App\Services\QrCodeService;
+use Illuminate\Http\Request;
 
+/**
+ * Controller for admin product management.
+ */
 class AdminProductController extends Controller
 {
-    protected $qrCodeService;
-
-    public function __construct(QrCodeService $qrCodeService)
-    {
-        $this->qrCodeService = $qrCodeService;
-    }
-
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function index()
     {
-        return Product::paginate(15);
+        return Product::all();
     }
 
-    public function store(StoreProductRequest $request)
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\ProductRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(ProductRequest $request)
     {
-        $validatedData = $request->validated();
-
-        $product = Product::create([
-            'qr_code' => $this->qrCodeService->generateUniqueQrCode(),
-            'product_name' => $validatedData['product_name'],
-            'batch_number' => $validatedData['batch_number'],
-        ]);
-
+        $product = Product::create($request->validated());
         return response()->json($product, 201);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \App\Models\Product
+     */
     public function show(Product $product)
     {
         return $product;
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\ProductRequest  $request
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ProductRequest $request, Product $product)
     {
-        $validatedData = $request->validated();
-
-        $product->update($validatedData);
-
-        return response()->json($product);
+        $product->update($request->validated());
+        return response()->json($product, 200);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Product $product)
     {
         $product->delete();
-
         return response()->json(null, 204);
     }
 
-    public function generateQrCode(Product $product)
+    /**
+     * Generate a QR code for the specified product.
+     *
+     * @param  \App\Models\Product  $product
+     * @param  \App\Services\QrCodeService  $qrCodeService
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function generateQrCode(Product $product, \App\Services\QrCodeService $qrCodeService)
     {
-        // In a real application, this would return a QR code image.
-        // For now, it returns the QR code string.
-        return response()->json(['qr_code' => $product->qr_code]);
+        $qrCode = $qrCodeService->generate($product);
+        $product->update(['qr_code' => $qrCode]);
+        return response()->json(['qr_code' => $qrCode]);
     }
 }

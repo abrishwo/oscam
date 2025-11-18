@@ -2,23 +2,43 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Str;
+use App\Models\Product;
 
+/**
+ * Service class for generating and verifying QR codes.
+ */
 class QrCodeService
 {
     /**
-     * Generate a unique QR code string.
+     * Generate a secure QR code.
      *
-     * In a real application, you would use a library like `simple-qrcode`
-     * to generate an actual QR code image. This service currently
-     * generates a unique string that can be used as the QR code data.
-     *
+     * @param Product $product
      * @return string
      */
-    public function generateUniqueQrCode(): string
+    public function generate(Product $product): string
     {
-        // Generate a random, unique string to be used as the QR code.
-        // A real implementation would also check for collisions.
-        return Str::random(32);
+        $payload = "{$product->id}|{$product->batch_number}|" . now()->timestamp;
+        $hmac = hash_hmac('sha256', $payload, config('app.key'));
+        return "{$payload}|{$hmac}";
+    }
+
+    /**
+     * Verify a QR code.
+     *
+     * @param string $qrCode
+     * @return bool
+     */
+    public function verify(string $qrCode): bool
+    {
+        $parts = explode('|', $qrCode);
+        if (count($parts) !== 4) {
+            return false;
+        }
+
+        [$productId, $batch, $timestamp, $hmac] = $parts;
+        $payload = "{$productId}|{$batch}|{$timestamp}";
+        $expectedHmac = hash_hmac('sha256', $payload, config('app.key'));
+
+        return hash_equals($expectedHmac, $hmac);
     }
 }

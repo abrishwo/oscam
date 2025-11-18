@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: Product Verification API
+  version: 1.0.0
+paths:
+  /api/verify:
+    post:
+      summary: Verify a QR code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                qr_code:
+                  type: string
+                device_id:
+                  type: string
+                geo_location:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+      responses:
+        '200':
+          description: OK
+  /api/products:
+    get:
+      summary: Get all products
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_name:
+                  type: string
+                batch_number:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '201':
+          description: Created
+  /api/products/{id}:
+    get:
+      summary: Get a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    put:
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_name:
+                  type: string
+                batch_number:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No Content
+  /api/products/{id}/generate-qr:
+    post:
+      summary: Generate a QR code for a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+  /api/scan-logs:
+    get:
+      summary: Get all scan logs
+      responses:
+        '200':
+          description: OK
