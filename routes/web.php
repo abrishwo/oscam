@@ -26,6 +26,7 @@ Route::get('/api/docs', function () {
 // Admin Panel Routes
 Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminController::class, 'login'])->name('login');
+    Route::post('/login', [AdminController::class, 'authenticate'])->name('admin.login.post');
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/products', [AdminController::class, 'products'])->name('admin.products.index');
