@@ -3,49 +3,60 @@
 namespace App\Services;
 
 use App\Models\Product;
-use App\Models\Scan;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
+/**
+ * Service class for product verification.
+ */
 class VerificationService
 {
-    public function verifyProduct(string $qrCode, ?string $deviceId, ?string $geoLocation, ?string $userAgent)
+    /**
+     * The QR code service instance.
+     *
+     * @var \App\Services\QrCodeService
+     */
+    protected $qrCodeService;
+
+    /**
+     * Create a new service instance.
+     *
+     * @param \App\Services\QrCodeService $qrCodeService
+     * @return void
+     */
+    public function __construct(QrCodeService $qrCodeService)
     {
-        $product = Product::where('qr_code', $qrCode)->first();
-
-        if (!$product) {
-            return ['status' => 'fake', 'message' => 'Product not found.'];
-        }
-
-        // Advanced verification logic
-        if ($product->scan_count > 0) {
-            $lastScan = Scan::where('product_id', $product->id)->latest('scanned_at')->first();
-            $timeSinceLastScan = now()->diffInSeconds($lastScan->scanned_at);
-
-            // Suspicious if scanned again within a short time window
-            if ($timeSinceLastScan < 60) {
-                $this->logScan($product->id, $deviceId, $geoLocation, $userAgent);
-                return ['status' => 'suspicious', 'message' => 'Product scanned multiple times in a short period.'];
-            }
-        }
-
-        DB::transaction(function () use ($product, $deviceId, $geoLocation, $userAgent) {
-            $product->increment('scan_count');
-            $product->last_scan = now();
-            $product->save();
-            $this->logScan($product->id, $deviceId, $geoLocation, $userAgent);
-        });
-
-        return ['status' => 'original', 'message' => 'Product is genuine.', 'product' => $product];
+        $this->qrCodeService = $qrCodeService;
     }
 
-    protected function logScan(int $productId, ?string $deviceId, ?string $geoLocation, ?string $userAgent)
+    /**
+     * Verify a QR code.
+     *
+     * @param string $qrCode
+     * @return array
+     */
+    public function verify(string $qrCode): array
     {
-        Scan::create([
-            'product_id' => $productId,
-            'device_id' => $deviceId,
-            'geo_location' => $geoLocation,
-            'user_agent' => $userAgent,
-            'scanned_at' => now(),
-        ]);
+        if (!$this->qrCodeService->verify($qrCode)) {
+            return ['status' => 'fake'];
+        }
+
+        $parts = explode('|', $qrCode);
+        $productId = $parts[0];
+
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return ['status' => 'fake'];
+        }
+
+        if ($product->status === 'fake') {
+            return ['status' => 'fake'];
+        }
+
+        if ($product->scan_count > 0) {
+            return ['status' => 'suspicious'];
+        }
+
+        return ['status' => 'original'];
     }
 }

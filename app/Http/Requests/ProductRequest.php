@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class VerifyProductRequest extends FormRequest
+class ProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,9 @@ class VerifyProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'qr_code' => 'required|string',
-            'device_id' => 'nullable|string',
-            'geo_location' => 'nullable|array',
+            'product_name' => 'required|string',
+            'batch_number' => 'required|string',
+            'status' => 'required|in:original,fake',
         ];
     }
 }

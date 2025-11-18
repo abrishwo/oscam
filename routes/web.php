@@ -32,5 +32,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/products', [AdminController::class, 'products'])->name('admin.products.index');
         Route::get('/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
         Route::get('/products/{id}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
+        Route::get('/products/import', [AdminController::class, 'importProducts'])->name('admin.products.import');
+        Route::post('/products/import', [AdminController::class, 'processImport'])->name('admin.products.import.post');
+        Route::get('/scan-logs', [AdminController::class, 'scanLogs'])->name('admin.scan-logs.index');
     });
 });

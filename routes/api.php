@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Product Verification
-Route::post('/verify', [ProductController::class, 'verify']);
+Route::post('/verify', [ProductController::class, 'verify'])->middleware('throttle:10,1');
 
 // Admin Product Management
 Route::middleware('auth:sanctum')->group(function () {
@@ -36,3 +36,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // QR Code Generation
 Route::middleware('auth:sanctum')->get('/products/{product}/generate-qr', [AdminProductController::class, 'generateQrCode']);
+
+// Scan Logs
+Route::middleware('auth:sanctum')->get('/scan-logs', [App\Http\Controllers\ScanLogController::class, 'index']);

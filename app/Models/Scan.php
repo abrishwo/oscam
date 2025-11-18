@@ -20,6 +20,7 @@ class Scan extends Model
         'device_id',
         'geo_location',
         'user_agent',
+        'raw_qr_text',
     ];
 
     /**

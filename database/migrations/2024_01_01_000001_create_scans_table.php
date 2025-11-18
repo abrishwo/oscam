@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('scans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamp('scanned_at')->useCurrent();
             $table->string('device_id')->nullable();
             $table->json('geo_location')->nullable();
             $table->string('user_agent')->nullable();
+            $table->string('raw_qr_text');
             $table->timestamps();
 
             $table->index('device_id');
