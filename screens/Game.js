@@ -175,4 +175,16 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: 'bold',
   },
+  buttonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  // Buttons
+  button: {
+    backgroundColor: '#000',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
 });
