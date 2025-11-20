@@ -146,7 +146,6 @@ export default function Game() {
 }
 
 const styles = StyleSheet.create({
-  // Containers
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -158,12 +157,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  gameOverContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  // Text
   score: {
     position: 'absolute',
     top: 50,
@@ -171,20 +164,24 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: 'bold',
   },
+  gameOverContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   gameOverText: {
     fontSize: 50,
     fontWeight: 'bold',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  // Buttons
   button: {
     backgroundColor: '#000',
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
