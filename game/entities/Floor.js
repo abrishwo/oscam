@@ -37,6 +37,6 @@ export default (world, color, pos, size) => {
     color,
     pos,
     size,
-    renderer: <Floor />,
+    renderer: Floor,
   };
 };

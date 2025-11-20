@@ -37,6 +37,6 @@ export default (world, label, color, pos, size) => {
     color,
     pos,
     size,
-    renderer: <Coin />,
+    renderer: Coin,
   };
 };
